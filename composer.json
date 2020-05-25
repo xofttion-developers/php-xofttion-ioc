@@ -3,6 +3,10 @@
     "type": "library",
     "license": "MIT",
     "description": "Librería que proporciona un conjunto de clase para implementar los principios de inversión de control (IoC)",
+    "keywords": [
+        "xofttion",
+        "ioc"
+    ],
     "authors": [
         {
             "name": "Daniel Andres Castillo Pedroza",

@@ -64,7 +64,7 @@ class ClassBuilder {
             
             if (is_null($instance)) {
                 $instance = $context->create($classFactory, $dependency->getClass());
-                $context->setSharedInstance($classDependency, $instance);
+                $context->attachSharedInstance($classDependency, $instance);
             }
             
             return $instance; // Retornando instancia compartida
