@@ -2,7 +2,7 @@
 
 namespace Xofttion\IoC;
 
-use Xofttion\Kernel\Structs\DataDictionary;
+use Xofttion\Kernel\Structs\Json;
 
 class ClassInstance {
     
@@ -16,7 +16,7 @@ class ClassInstance {
     
     /**
      *
-     * @var DataDictionary 
+     * @var Json 
      */
     private $dependences;
     
@@ -27,7 +27,7 @@ class ClassInstance {
      * @param string $class
      */
     public function __construct(string $class) {
-        $this->dependences = new DataDictionary(); $this->setClass($class); 
+        $this->dependences = new Json(); $this->setClass($class); 
     }
     
     // Métodos de la clase ClassInstance
@@ -70,9 +70,9 @@ class ClassInstance {
     
     /**
      * 
-     * @return DataDictionary
+     * @return Json
      */
-    public function getDependences(): DataDictionary {
+    public function getDependences(): Json {
         return $this->dependences;
     }
 }

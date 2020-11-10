@@ -2,7 +2,7 @@
 
 namespace Xofttion\IoC;
 
-use Xofttion\Kernel\Structs\DataDictionary;
+use Xofttion\Kernel\Structs\Json;
 use Xofttion\IoC\Contracts\IDependencyFactory;
 
 class ContextContainer {
@@ -29,21 +29,21 @@ class ContextContainer {
     
     /**
      *
-     * @var DataDictionary 
+     * @var Json 
      */
     private $dependencesFactory;
     
     /**
      *
-     * @var DataDictionary 
+     * @var Json 
      */
     private $dependencesShared;
 
     // Constructor de la clase ContextContainer
     
     private function __construct() {
-        $this->dependencesFactory = new DataDictionary();
-        $this->dependencesShared  = new DataDictionary();
+        $this->dependencesFactory = new Json();
+        $this->dependencesShared  = new Json();
     }
     
     // Métodos de la clase ContextContainer
