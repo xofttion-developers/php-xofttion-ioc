@@ -15,7 +15,7 @@
     ],
     "minimum-stability": "dev",
     "require": {
-        "xofttion/kernel" : "dev-master"
+        "xofttion/kernel" : "5.8.x-dev"
     },
     "autoload": {
         "psr-4": {
