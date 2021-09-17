@@ -23,7 +23,9 @@ class ClassBuilder
         $classValue = $this->build($classInstance->getClass());
         $reflection = new ReflectionClass($classValue);
 
-        foreach ($classInstance->getDependences()->values() as $classDependency => $dependency) {
+        $dependencies = $classInstance->getDependencies();
+
+        foreach ($dependencies->values() as $classDependency => $dependency) {
             $methodSetter = $this->getMethodName($classDependency);
             $injector = $this->getInjector($reflection, $methodSetter);
 
