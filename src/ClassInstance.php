@@ -20,7 +20,7 @@ class ClassInstance
      *
      * @var IJson 
      */
-    private $dependences;
+    private $dependencies;
 
     // Constructor de la clase ClassInstance
 
@@ -30,7 +30,7 @@ class ClassInstance
      */
     public function __construct(string $class)
     {
-        $this->dependences = new Json();
+        $this->dependencies = new Json();
         $this->setClass($class);
     }
 
@@ -73,7 +73,7 @@ class ClassInstance
      */
     public function attach(string $key, string $class, bool $shared = false): ClassInstance
     {
-        $this->dependences->attach($key, new Dependency($class, $shared));
+        $this->dependencies->attach($key, new Dependency($class, $shared));
 
         return $this;
     }
@@ -82,8 +82,25 @@ class ClassInstance
      * 
      * @return IJson
      */
-    public function getDependences(): IJson
+    public function getDependencies(): IJson
     {
-        return $this->dependences;
+        return $this->dependencies;
+    }
+
+    /**
+     * 
+     * @param string $class
+     * @param array $dependencies
+     * @return ClassInstance
+     */
+    public static function build(string $class, array $dependencies = []): ClassInstance
+    {
+        $classInstance = new static ($class);
+
+        foreach ($dependencies as $nameDependency => $classDependency) {
+            $classInstance->attach($nameDependency, $classDependency);
+        }
+
+        return $classInstance;
     }
 }
