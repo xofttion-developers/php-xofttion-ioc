@@ -2,14 +2,15 @@
 
 namespace Xofttion\IoC\Contracts;
 
-interface IDependencyFactory {
-    
+interface IDependencyFactory
+{
+
     // Métodos de la interfaz IDependencyFactory
-    
+
     /**
      * 
      * @param string $class
-     * @return object
+     * @return mixed
      */
     public function build(string $class);
 }

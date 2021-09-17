@@ -4,82 +4,76 @@ namespace Xofttion\IoC;
 
 use ReflectionClass;
 use ReflectionMethod;
-
 use Xofttion\Kernel\Str;
 
-class ClassBuilder {
-    
+class ClassBuilder
+{
+
     // Métodos de la clase ClassBuilder
-    
+
     /**
      * 
      * @param ClassInstance $classInstance
      * @param ContextContainer $context
      * @param string $classFactory
-     * @return object
+     * @return mixed
      */
-    public function create(ClassInstance $classInstance, ContextContainer $context, string $classFactory) {
-        $instance   = $this->build($classInstance->getClass()); // Instancia
-        $reflection = new ReflectionClass($instance);
-        
-        foreach ($classInstance->getDependences()->values() as $propertyName => $dependency) {
-            $methodSetter = $this->getMethodName($propertyName); // Nombre del Método
-            $injector     = $this->getDependencyInjector($reflection, $methodSetter);
+    public function create(ClassInstance $classInstance, ContextContainer $context, string $classFactory)
+    {
+        $classValue = $this->build($classInstance->getClass());
+        $reflection = new ReflectionClass($classValue);
 
-            if (!is_null($injector)) {
-                $injector->invoke($instance, $this->createDependency($dependency, $context, $classFactory, $propertyName));
-            } // Inyectando dependencia en clase en construcción
-        }
+        foreach ($classInstance->getDependences()->values() as $classDependency => $dependency) {
+            $methodSetter = $this->getMethodName($classDependency);
+            $injector = $this->getInjector($reflection, $methodSetter);
+
+            if (is_defined($injector)) {
+                if ($dependency->isShared()) {
+                    $sharedValue = $context->getShared($classDependency);
         
-        return $instance; // Retornando instancia de la clase
+                    if (is_null($sharedValue)) {
+                        $sharedValue = $context->create($classFactory, $dependency->getClass());
+                        $context->attachShared($classDependency, $sharedValue);
+                    }
+        
+                    $dependencyValue = $sharedValue;
+                }
+                else {
+                    $dependencyValue = $context->create($classFactory, $dependency->getClass());
+                }
+                
+                $injector->invoke($classValue, $dependencyValue);
+            }
+        }
+
+        return $classValue;
     }
-    
+
     /**
      * 
      * @param ReflectionClass $reflection
      * @param string $methodSetter
      * @return ReflectionMethod|null
      */
-    private function getDependencyInjector(ReflectionClass $reflection, string $methodSetter): ?ReflectionMethod {
+    private function getInjector(ReflectionClass $reflection, string $methodSetter): ?ReflectionMethod
+    {
         if (!$reflection->hasMethod($methodSetter)) {
-            return null; // Clase no contiene método para inyectar dependencia
+            return null;
         }
-        
-        $injector = $reflection->getMethod($methodSetter); // Método de la propiedad
 
-        return (!$injector->isPublic()) ? null : $injector; // Retornando método
-    }
-    
-    /**
-     * 
-     * @param Dependency $dependency
-     * @param ContextContainer $context
-     * @param string $classFactory
-     * @param string $classDependency
-     * @return object
-     */
-    private function createDependency(Dependency $dependency, ContextContainer $context, string $classFactory, string $classDependency) {
-        if ($dependency->isShared()) {
-            $instance = $context->getSharedInstance($classDependency); // Consultando
-            
-            if (is_null($instance)) {
-                $instance = $context->create($classFactory, $dependency->getClass());
-                $context->attachSharedInstance($classDependency, $instance);
-            }
-            
-            return $instance; // Retornando instancia compartida
-        } else {
-            return $context->create($classFactory, $dependency->getClass()); // Nueva instancia
-        }
+        $injector = $reflection->getMethod($methodSetter); // Método
+
+        return (!$injector->isPublic()) ? null : $injector;
     }
 
     /**
      * 
      * @param string $class
-     * @return object
+     * @return mixed
      */
-    protected function build(string $class) {
-        return new $class(); // Instanciando clase
+    protected function build(string $class)
+    {
+        return new $class();
     }
 
     /**
@@ -87,7 +81,8 @@ class ClassBuilder {
      * @param string $propertyName
      * @return string
      */
-    protected function getMethodName(string $propertyName): string {
+    protected function getMethodName(string $propertyName): string
+    {
         return Str::getCamelCase()->ofSnakeSetter($propertyName);
     }
 }
