@@ -2,19 +2,21 @@
 
 namespace Xofttion\IoC;
 
+use Xofttion\Kernel\Contracts\IJson;
 use Xofttion\Kernel\Structs\Json;
 use Xofttion\IoC\Contracts\IDependencyFactory;
 
-class ContextContainer {
-    
+class ContextContainer
+{
+
     // Atributos de la clase ContextContainer
-    
+
     /**
      *
      * @var ContextContainer 
      */
     protected static $instance;
-    
+
     /**
      *
      * @var ClassBuilder 
@@ -25,74 +27,81 @@ class ContextContainer {
      *
      * @var IDependencyFactory 
      */
-    protected $dependencyFactory;
-    
+    protected $factory;
+
     /**
      *
      * @var Json 
      */
-    private $dependencesFactory;
-    
+    private $dependencies;
+
     /**
      *
      * @var Json 
      */
-    private $dependencesShared;
+    private $shareds;
 
     // Constructor de la clase ContextContainer
-    
-    private function __construct() {
-        $this->dependencesFactory = new Json();
-        $this->dependencesShared  = new Json();
+
+    private function __construct(IJson $dependencies, IJson $shareds)
+    {
+        $this->dependencies = $dependencies;
+        $this->shareds = $shareds;
     }
-    
+
     // Métodos de la clase ContextContainer
 
     /**
      * 
      * @return ContextContainer
      */
-    public static function getInstance(): ContextContainer {
+    public static function getInstance(): ContextContainer
+    {
         if (is_null(self::$instance)) {
-            self::$instance = new static(); // Instanciando ContextContainer
-        } 
-        
-        return self::$instance; // Retornando instancia
+            self::$instance = new static (new Json(), new Json());
+        }
+
+        return self::$instance;
     }
-    
+
     /**
      * 
      * @param string $classFactory
      * @param string $classInstance
-     * @return object
+     * @return mixed
      */
-    public function create(string $classFactory, string $classInstance) {
-        $builder = $this->getFactory($classFactory)->build($classInstance);
-        
+    public function create(string $classFactory, string $classInstance)
+    {
+        $factory = $this->getFactory($classFactory);
+        $builder = $factory->build($classInstance);
+
         if ($builder instanceof ClassInstance) {
             return $this->getBuilder()->create($builder, $this, $classFactory);
-        } else {
-            return $builder; // Retornando objeto generado
+        }
+        else {
+            return $builder;
         }
     }
-    
+
     /**
      * 
      * @param string $classDependency
-     * @param object $dependency
+     * @param mixed $value
      * @return void
      */
-    public function attachSharedInstance(string $classDependency, $dependency): void {
-        $this->dependencesShared->attach($classDependency, $dependency);
+    public function attachShared(string $classDependency, $value): void
+    {
+        $this->shareds->attach($classDependency, $value);
     }
-    
+
     /**
      * 
      * @param string $classDependency
-     * @return object
+     * @return mixed
      */
-    public function getSharedInstance(string $classDependency) {
-        return $this->dependencesShared->getValue($classDependency);
+    public function getShared(string $classDependency)
+    {
+        return $this->shareds->getValue($classDependency);
     }
 
     /**
@@ -100,53 +109,34 @@ class ContextContainer {
      * @param string $classFactory
      * @return IDependencyFactory
      */
-    private function getFactory(string $classFactory): IDependencyFactory {
-        $factory = $this->getDependencyFactory($classFactory); // Factoría
-        
-        if (is_null($factory)) {
-            $factory = new $classFactory(); // Instanciando factoría de dependencias
-            $this->attachDependencyFactory($classFactory, $factory);
-        } // No existe instancia de la factoría 
-        
-        return $factory; // Retornando factoría de dependencias contexto
+    private function getFactory(string $classFactory): IDependencyFactory
+    {
+        if (is_null($this->factory)) {
+            $this->factory = new $classFactory();
+        }
+
+        return $this->factory;
     }
-    
-    /**
-     * 
-     * @param string $classFactory
-     * @param IDependencyFactory $factory
-     * @return void
-     */
-    private function attachDependencyFactory(string $classFactory, IDependencyFactory $factory): void {
-        $this->dependencesFactory->attach($classFactory, $factory);
-    }
-    
-    /**
-     * 
-     * @param string $classFactory
-     * @return IDependencyFactory|null
-     */
-    private function getDependencyFactory(string $classFactory): ?IDependencyFactory {
-        return $this->dependencesFactory->getValue($classFactory);
-    }
-    
+
     /**
      * 
      * @return ClassBuilder
      */
-    private function getBuilder(): ClassBuilder {
+    private function getBuilder(): ClassBuilder
+    {
         if (is_null($this->builder)) {
             $this->builder = $this->getInstanceBuilder();
         }
-        
-        return $this->builder; // Constructor de clase
+
+        return $this->builder;
     }
-    
+
     /**
      * 
      * @return ClassBuilder
      */
-    protected function getInstanceBuilder(): ClassBuilder {
+    protected function getInstanceBuilder(): ClassBuilder
+    {
         return new ClassBuilder();
     }
 }
