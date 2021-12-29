@@ -1,4 +1,5 @@
 /vendor/
 /nbproject/
-/test/
+/values/
 composer.lock
+/index.php
