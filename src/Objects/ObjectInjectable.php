@@ -10,9 +10,9 @@ class ObjectInjectable implements IObject
 {
     // Atributos de la clase ObjectInjectable
 
-    private $class;
+    private string $class;
 
-    private $factory;
+    private IFactory $factory;
 
     // Constructor de la clase ObjectInjectable
 
