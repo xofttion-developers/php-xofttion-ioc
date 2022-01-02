@@ -8,7 +8,7 @@ class ObjectClass implements IObject
 {
     // Atributos de la clase ObjectClass
 
-    private $class;
+    private string $class;
 
     // Constructor de la clase ObjectClass
 

@@ -8,7 +8,7 @@ class Service
 {
     // Atributos de la clase Service
 
-    private $factory;
+    private IFactory $factory;
 
     // Constructor de la clase Service
 
