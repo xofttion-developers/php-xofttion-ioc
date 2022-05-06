@@ -8,8 +8,6 @@ use Xofttion\IoC\Objects\ObjectValue;
 
 class Factory implements IFactory
 {
-    // Métodos sobrescritos de la interfaz IFactory
-
     public function build(string $ref): ?IObject
     {
         return ObjectValue::build($ref);

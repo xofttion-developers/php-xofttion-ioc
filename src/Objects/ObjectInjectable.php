@@ -8,13 +8,9 @@ use Xofttion\IoC\Contracts\IObject;
 
 class ObjectInjectable implements IObject
 {
-    // Atributos de la clase ObjectInjectable
-
     private string $class;
 
     private IFactory $factory;
-
-    // Constructor de la clase ObjectInjectable
 
     private function __construct(string $class, IFactory $factory)
     {
@@ -22,14 +18,10 @@ class ObjectInjectable implements IObject
         $this->factory = $factory;
     }
 
-    // Métodos estáticos de la clase ObjectInjectable
-
     public static function build(string $class, IFactory $factory): self
     {
         return new static($class, $factory);
     }
-
-    // Métodos sobrescritos de la intefaz IObject
 
     public function value()
     {
