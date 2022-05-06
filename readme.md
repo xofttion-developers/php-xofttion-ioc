@@ -1,7 +1,7 @@
 ## Xofttion IoC
 
-Librería de Xofttion con funcionalidades para implementar los principios de inversión de control (IoC).
+Package IoC of Xofttion
 
-## Instalación
+## Installation
 
     composer require xofttion/ioc
